@@ -1,0 +1,40 @@
+{% extends 'root/_base.html' %}
+{% load static %}
+{% block title %} Home {% endblock%}
+{% block style %} <link rel="stylesheet" href="{% static 'css/homepage.css' %}"> {% endblock %}
+
+{% block content%}
+    <h2>Recommended Books for You</h2>
+    <section class="container new-release"></section>
+        {% if recommended_books %}
+            <div class="row new-release-row ">
+                {% for book in recommended_books %}
+                <div class="col col-md-2 mb-5">
+                    <div class="card" style="width: 11rem;">
+                        <img class="card-img-top" src="{{ book.cover_photo_url }}" alt="{{book.title}}">
+                        <div class="card-body">
+                        <a href="{% url 'shop:product_detail' book.isbn %}" 
+                        class="card-text text text-center click-interaction product-link"
+                        onclick="registerInteraction('{{book.isbn}}', 'click')"
+                        >{{ book.title|truncatechars:20 }} - by 
+                            {{ book.author }} | <i class="fa-solid fa-dollar-sign"></i> {{ book.price }}
+                        </a>
+                        <p class="card-rating text-center"><i class="fa-solid fa-star"></i> 5</p>
+                        <!--div class="d-flex justify-content-between price-cart">
+                            <p class="card-price text-center h6"><i class="fa-solid fa-dollar-sign"></i> {{ product.price }}</p>
+                            <div class="icon">
+                                <i class="fa-solid fa-plus"></i><i class="fa-solid fa-cart-shopping"></i>
+                            </div>
+                        </div-->
+                        </div>
+
+                        <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}"> 
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p>No recommendations available at this time.</p>
+        {% endif %}
+    </section>
+{% endblock %}

@@ -1,0 +1,48 @@
+{% extends 'root/_base.html' %}
+{% load static %}
+{% block title %} Register {% endblock%}
+
+{% block style %} 
+<link href="{% static 'css/registration.css' %}" rel="stylesheet">
+{% endblock %}
+
+
+{% block content%}
+
+    <div class="main custom-container">
+      <div class="d-flex justify-content-between">
+        <h2 class="mb-5 sign-up-header">Create an Account</h2>
+        <a href="{% url 'user:login' %}" class="mb-5 sign-in-header">Sign In</a>
+      </div>
+        <form action="{% url 'user:register' %}" method="POST">
+          {% csrf_token %}
+          <div class="form-floating mb-3">
+            <input type="text" class="form-control" id="first_name" name="first_name" placeholder="Your First Name">
+            <label for="floatingInput">First Name</label>
+          </div>
+          <div class="form-floating mb-3">
+            <input type="text" class="form-control" id="last_name" name="last_name" placeholder="Your Last Name">
+            <label for="floatingInput">Last Name</label>
+          </div>
+          <div class="form-floating mb-3">
+            <input type="email" class="form-control" id="email" name="email" placeholder="name@example.com">
+            <label for="floatingInput">Email address</label>
+          </div>
+          <div class="form-floating">
+            <input type="password" class="form-control" id="password1" name="password1" placeholder="Password">
+            <label for="floatingPassword">Password</label>
+          </div>
+          <div class="form-floating">
+            <input type="password" class="form-control" id="password2" name="password2" placeholder="Password">
+            <label for="floatingPassword">Confirm Password</label>
+            <span class="password-instructions" style="font-size: .8rem; font-weight: 600;">6 character minimum, case-sensitive, no spaces.</span>
+              <br> <span style="font-size: .8rem; font-weight: 400;">Tip: Use upper and lowercase, numbers, and symbols for strong passwords.</span>
+          </div>
+          <button type="submit" class="btn sign-in-btn text-white mt-3">Sign Up</button>
+          <p class="term-condition mt-3" style="font-size: .8rem;">BookPULSE uses your personal information to create your account, 
+            communicate with you, process your transactions with us, 
+            and provide you with our products and services.<br>
+            By continuing, you agree to our <a style="color: blue;">Terms of Use and Privacy Policy</a>.</p>
+        </form>
+      </div>
+{% endblock %}

@@ -1,0 +1,130 @@
+.hero-section{
+    position: relative;
+    background: url('https://res.cloudinary.com/ewise/image/upload/v1733179920/library_oqj2ck.jpg') no-repeat center center;
+    background-size: cover;
+    height: 100vh;
+    color: var(--main-text-color-white) !important;
+
+}
+
+.login-logo h1 picture img{
+    width: 50px !important;
+}
+
+.hero-section::before{
+    content: '';
+    position:absolute;
+    top:0;
+    right:0;
+    bottom:0;
+    left:0;
+    background: rgba(0,0,0,0.5);
+    z-index: 1;
+}
+
+.hero-container{
+    position: relative;
+    z-index:2;
+}
+
+.hero-container h2{
+    z-index: 1;
+    font-weight: 700 !important;
+}
+
+.hero-container p{
+    font-weight: 500 !important;
+}
+
+.btn-main-container{
+    width: 22% !important;
+    margin: auto !important;
+}
+
+.btn-main{
+    color: var(--main-text-color-white) !important;
+}
+
+.new-release{
+    margin-top: 50px !important;
+}
+
+
+.new-release-row .col img{
+    width: 11rem !important;
+    height: 12rem !important;
+}
+
+.card{
+    border: none !important;
+    position: relative !important;
+}
+
+.card-body{
+    padding: 5px !important;
+    height: 90px !important;
+}
+
+.card-text{
+ 
+}
+
+.card-rating{
+    position: absolute !important;
+    top: 0;
+    right: 0;
+    padding: 5px;
+}
+
+.price-cart{
+    border-top: 1px solid rgba(128, 128, 128, 0.137);
+
+    padding: 7px; 
+}
+
+.fa-cart-shopping{
+    font-size: 1.5rem !important;
+    color: var(--main-btn-color);
+}
+
+.fa-plus{
+    font-size: small !important;
+}
+
+@media (max-width: 576px) { /* Targets extra-small screens and down */
+    .custom-dropdown-button {
+        font-size: 12px; /* Smaller font size */
+        padding: 0.2rem 0.5rem; /* Adjusts button padding */
+    }
+
+    .mobile-text {
+        font-size: 25px;
+        line-height: 1.5;
+    }
+
+    .mobile-lead{
+        font-size: 14px !important;
+    }
+
+    .mobile-btn{
+        font-size: 12px !important;
+        padding: .5rem !important;
+    }
+
+    .btn-main-container{
+        width: 60% !important;
+        margin: 20px auto !important;
+    }
+
+    .hero-container{
+        margin-top: 25%;
+    }
+
+    /*.new-release-row .col img{
+        width: 100% !important;
+    }
+
+    .card{
+        width: 20rem !important;
+    }*/
+}

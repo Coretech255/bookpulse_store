@@ -1,0 +1,249 @@
+{% extends 'root/_base.html' %}
+{% load static %}
+{% block title %} {{ product.title }} {% endblock%}
+{% block style %} <link rel="stylesheet" href="{% static 'css/homepage.css' %}"> {% endblock %}
+
+{% block content%}
+<div class="container mx-auto px-4 py-8 max-w-6xl">
+    <div class="grid md:grid-cols-12 gap-8">
+        <div class="md:col-span-3">
+            <div class="add-to-cart shadow-lg rounded-lg overflow-hidden">
+                <img class="w-full h-96 object-cover" src="{{ product.cover_photo_url }}" alt="{{ product.title }}">
+            </div>
+        </div>
+        <div class="md:col-span-9">
+            <div class="detail-text space-y-4">
+                <h1 class="text-3xl font-bold text-gray-900">
+                    {{ product.title }} 
+                    <span class="text-xl text-gray-600 ml-2">by {{ product.author }}</span>
+                    <span class="text-sm text-gray-500 align-middle">(Author)</span>
+                </h1>
+                <p class="text-sm text-gray-700 leading-relaxed w-1/2">{{ product.description }}</p>
+                
+                <div class="flex items-center space-x-2">
+                    <span class="text-sm font-medium">Book Categories:</span>
+                    {% for category in categories %}
+                        <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full">{{ category.name }}</span>
+                    {% endfor %}
+                </div>
+                
+                <div class="flex space-x-4 items-center">
+                    <button 
+                        id="like-button"
+                        class="btn btn-success {% if user_has_liked %} disabled opacity-70 {% endif %} px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 transition"
+                        value="Like">
+                        {% if user_has_liked %}
+                            Liked
+                        {% else %}
+                            Like
+                        {% endif %}
+                    </button>
+                    
+                    <form action="{% url 'cart:cart_add' product.id %}" class="flex items-center space-x-2" method="post">
+                        <div class="flex items-center">
+                            {{ cart_product_form }}
+                        </div>
+                        {% csrf_token %}
+                        <button 
+                            type="submit" 
+                            onclick="registerInteraction('{{product.isbn}}', 'add_to_cart')"
+                            class="btn btn-md text-white add-to-cart-button mobile-btn bg-blue-600 hover:bg-blue-700 px-6 py-2 rounded transition">
+                            Add to Cart
+                        </button>
+                        <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}"> 
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <hr class="my-8 border-gray-200">
+
+    <section class="reviews">
+        <h4 class="text-base font-semibold text-white bg-blue-600 px-2 py-2 inline-block rounded mb-4">Book Rating & Review</h4>
+        <ul class="space-y-4">
+            {% for rating in ratings %}
+                <li class="bg-gray-50 p-4 rounded-lg shadow-sm">
+                    <div class="flex justify-between items-center mb-2">
+                        <strong class="text-gray-800">{{ rating.user.first_name }}</strong>
+                        <span class="text-yellow-500">{{ rating.rating }} ★</span>
+                    </div>
+                    <p class="text-gray-600">{{ rating.review}}</p>
+                    <small class="text-gray-500">{{ rating.timestamp }}</small>
+                </li>
+            {% endfor %}
+        </ul>
+    </section>
+
+    <section class="container recommended-books mt-12">
+        {% if recommended_books %}
+        <h2 class="text-2xl font-bold text-blue-900 mb-6">Recommended Books</h2>
+        <div class="row g-4 gap-y-1">
+            {% for recommended_book in recommended_books %}
+            <div class="col-lg-2 col-md-3 col-sm-6 col-12"> <!-- Responsive column widths -->
+                <a href="{% url 'shop:product_detail' recommended_book.isbn %}" class="text-decoration-none text-dark product-link"
+                data-isbn="{{ related_product.isbn }}" onclick="registerInteraction('{{related_product.isbn}}', 'click')" >
+                    <div class="card h-100 shadow-sm transform hover:scale-105 transition duration-300" style="min-height: 350px;"> <!-- Reduced height slightly -->
+                        <img class="card-img-top" src="{{ recommended_book.cover_photo_url }}" alt="{{ recommended_book.title }}"
+                            style="object-fit: cover; height: 250px;"> <!-- Consistent image sizing -->
+                        <div class="card-body d-flex flex-column justify-content-between"> <!-- Organized spacing -->
+                            <!-- Title Section -->
+                            <h6 class="card-title text-center mb-2" style="font-size: 1rem; word-wrap: break-word;"> <!-- Reduced font size -->
+                                    {{ recommended_book.title|truncatechars:19 }}
+                            </h6>
+                            
+                            <!-- Author Section -->
+                            <p class="card-text text-center text-muted mb-1" style="font-size: 0.8rem;"> <!-- Reduced font size -->
+                                By {{ recommended_book.author }}
+                            </p>
+                            
+                            <!-- Price Section -->
+                            <p class="card-text text-center d-flex justify-content-between align-items-center p-2"
+                            style="background-color: #f8f9fa; border-radius: 5px">
+                                <span class="text-success fw-bold">
+                                    <i class="fa-solid fa-dollar-sign"></i> {{ recommended_book.price }}
+                                </span>
+                                <i class="fa-solid fa-cart-plus text-primary"></i>
+                            </p>
+                            
+                            <!-- Categories Section -->
+                            <p class="card-rating text-center text-muted mt-2"> <!-- Smaller font -->
+                                {% for category in recommended_book.categories.all %}
+                                <span class="bg-red-800 text-red-100 text-sm font-medium me-2 px-2.5 py-0.5 rounded dark:bg-red-900 dark:text-red-300">{{ category.name }}</span>
+                                {% endfor %}
+                            </p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+    </section>
+
+    <section class="container related-books mt-12">
+        <h2 class="text-2xl font-bold text-blue-900 mb-6">Related Books</h2>
+        <div class="row g-4 gap-y-1">
+            {% for related_product in related_products %}
+            <div class="col-lg-2 col-md-3 col-sm-6 col-12"> <!-- Responsive column widths -->
+                <a href="{% url 'shop:product_detail' related_product.isbn %}" class="text-decoration-none text-dark product-link"
+                data-isbn="{{ related_product.isbn }}" onclick="registerInteraction('{{related_product.isbn}}', 'click')">
+                    <div class="card h-100 shadow-sm transform hover:scale-105 transition duration-300" style="min-height: 350px;"> <!-- Reduced height slightly -->
+                        <img class="card-img-top" src="{{ related_product.cover_photo_url }}" alt="{{ related_product.title }}"
+                            style="object-fit: cover; height: 250px;"> <!-- Consistent image sizing -->
+                        <div class="card-body d-flex flex-column justify-content-between"> <!-- Organized spacing -->
+                            <!-- Title Section -->
+                            <h6 class="card-title text-center mb-2" style="font-size: 1rem; word-wrap: break-word;"> <!-- Reduced font size -->
+                                    {{ related_product.title|truncatechars:19 }}
+                            </h6>
+                            
+                            <!-- Author Section -->
+                            <p class="card-text text-center text-muted mb-1" style="font-size: 0.8rem;"> <!-- Reduced font size -->
+                                By {{ related_product.author }}
+                            </p>
+                            
+                            <!-- Price Section -->
+                            <p class="card-text text-center d-flex justify-content-between align-items-center p-2"
+                            style="background-color: #f8f9fa; border-radius: 5px">
+                                <span class="text-success fw-bold">
+                                    <i class="fa-solid fa-dollar-sign"></i> {{ related_product.price }}
+                                </span>
+                                <i class="fa-solid fa-cart-plus text-primary"></i>
+                            </p>
+                            
+                            <!-- Categories Section -->
+                            <p class="card-rating text-center text-muted mt-2"> <!-- Smaller font -->
+                                {% for category in related_product.categories.all %}
+                                <span class="bg-red-800 text-red-100 text-sm font-medium me-2 px-2.5 py-0.5 rounded dark:bg-red-900 dark:text-red-300">{{ category.name }}</span>
+                                {% endfor %}
+                            </p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+
+    <section class="review-form mt-12">
+        <h2 class="text-2xl font-bold text-blue-900 mb-6">Leave a Review</h2>
+        <form method="post" class="space-y-4 bg-gray-50 p-6 rounded-lg shadow-md">
+            {% csrf_token %}
+            <div class="space-y-2">
+                {{ rating_form.as_p }}
+            </div>
+            <button type="submit" class="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 transition">Submit Review</button>
+        </form>
+    </section>
+</div>
+
+<script>
+    const socket = new WebSocket('ws://' + window.location.host + '/ws/interaction/');
+    console.log('connected')
+    socket.onmessage = function(e) {
+        const data = JSON.parse(e.data);
+
+        if (data) {
+            console.log('data')
+        }
+        //console.log(data, 'Data is absent')
+
+        if (data.status === 'success') {
+            if (data.rating) {
+                // Update rating in the UI
+                document.getElementById('rating').innerText = `Rating: ${data.rating}`;
+
+                if(data.action === 'like'){
+                    const likeButton = document.getElementById('like-button');
+                    likeButton.classList.add('disabled opacity-70');
+                }
+            }
+
+            if (data.recommendations) {
+                // Update recommendations in the UI
+                const recommendationsList = document.getElementById('recommendations');
+                recommendationsList.innerHTML = '';
+
+                data.recommendations.forEach(book => {
+                    const li = document.createElement('li');
+                    li.innerText = `${book.title} (ISBN: ${book.isbn})`;
+                    recommendationsList.appendChild(li);
+                });
+            }
+        }
+    };
+
+    function registerInteraction(isbn, action, time_spent = 0) {
+        socket.send(JSON.stringify({
+            'isbn': isbn,
+            'action': action,
+            'time_spent': time_spent
+        }));
+    }
+
+    // Example: Register a 'like' interaction when the like button is clicked
+    document.getElementById('like-button').addEventListener('click', function() {
+        registerInteraction('{{ product.isbn }}', 'like');
+    });
+
+
+    /*// Example: Register an 'add to cart' interaction when the add to cart button is clicked
+    document.getElementById('add-to-cart-button').addEventListener('click', function() {
+        registerInteraction('{{ product.isbn }}', 'add_to_cart');
+    });
+    
+            // Example: Track time spent on the product page
+    /*let startTime = Date.now();
+    //window.addEventListener('beforeunload', function() {
+     //   let timeSpent = (Date.now() - startTime) / 1000; // Convert to seconds
+       // registerInteraction('{{ product.isbn }}', 'click', time_spent = timeSpent);
+    //});
+
+    //onclick="registerInteraction('{{product.isbn}}', 'like')" */
+
+</script>
+
+{% endblock %}
+
+
+

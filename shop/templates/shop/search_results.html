@@ -1,0 +1,82 @@
+{% extends 'root/_base.html' %}
+{% load static %}
+{% block title %} Search Results {% endblock %}
+{% block style %}
+<link rel="stylesheet" href="{% static 'css/homepage.css' %}"> {% endblock %}
+
+{% block content %}
+<section class="container search-results">
+    <br>
+    {% if request.GET.q %}
+    <h4 class="btn btn-md text-white mb-5">Results for "{{ request.GET.q }}"</h4>
+    {% else %}
+    <h3>No search query provided</h3>
+    {% endif %}
+
+    <div class="row g-4"> <!-- Spacing between cards -->
+        {% for product in products %}
+        <div class="col-lg-2 col-md-3 col-sm-6 col-12"> <!-- Responsive column widths -->
+            <a href="{% url 'shop:product_detail' product.isbn %}" data-isbn="{{ product.isbn }}"
+                    onclick="registerInteraction('{{product.isbn}}', 'click')">
+                <div class="card h-100 shadow-sm hover:shadow-lg hover:transform hover:scale-105 transition-all duration-300" style="min-height: 350px;"> <!-- Reduced height slightly -->
+                    <img class="card-img-top" src="{{ product.cover_photo_url }}" alt="{{ product.title }}"
+                        style="object-fit: cover; height: 250px;"> <!-- Consistent image sizing -->
+                    <div class="card-body d-flex flex-column justify-content-between"> <!-- Organized spacing -->
+                        <!-- Title Section -->
+                        <h6 class="card-title text-center mb-2" style="font-size: 1rem;">
+                            <!-- Reduced font size -->
+                            <a href="{% url 'shop:product_detail' product.isbn %}"
+                                class="text-decoration-none text-dark product-link">
+                                {{ product.title|truncatechars:19 }}
+                            </a>
+                        </h6>
+
+                        <!-- Author Section -->
+                        <p class="card-text text-center text-muted mb-1" style="font-size: 0.8rem;">
+                            <!-- Reduced font size -->
+                            By {{ product.author }}
+                        </p>
+
+                        <!-- Price Section -->
+                        <p class="card-text text-center d-flex justify-content-between align-items-center p-2"
+                            style="background-color: #f8f9fa; border-radius: 5px">
+                            <span class="text-success fw-bold">
+                                <i class="fa-solid fa-dollar-sign"></i> {{ product.price }}
+                            </span>
+                            <i class="fa-solid fa-cart-plus text-primary"></i>
+                        </p>
+
+                        <!-- Categories Section -->
+                        <p class="card-rating text-center text-muted mt-2"> <!-- Smaller font -->
+                            {% for category in product.categories.all %}
+                            <span class="badge bg-secondary">{{ category.name }}</span>
+                            {% endfor %}
+                        </p>
+                    </div>
+                </div>
+            </a>
+        </div>
+        {% empty %}
+        <h2>No products found matching your search criteria.</h2>
+        {% endfor %}
+    </div>
+
+
+    <!-- Pagination controls -->
+    <div class="pagination mt-4">
+        <span class="step-links">
+            {% if products.has_previous %}
+            <a href="?page=1">&laquo; first</a>
+            <a href="?page={{ page_obj.previous_page_number }}">previous</a>
+            {% endif %}
+
+            <span class="current">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+
+            {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}">next</a>
+            <a href="?page={{ page_obj.paginator.num_pages }}">last &raquo;</a>
+            {% endif %}
+        </span>
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,15 @@
+#header{
+    background-color: var(--main-btn-color);
+}
+
+html[data-theme="light"],
+:root {
+    --primary: var(--main-btn-color);
+    --secondary: #417690;
+    --accent: #f5dd5d;
+    --primary-fg: #fff;
+}
+
+.login-logo h1 picture img{
+    width: 50px !important;
+}

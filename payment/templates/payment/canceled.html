@@ -1,0 +1,12 @@
+{% extends 'root/_base.html' %}
+{% load static %}
+{% block title %} Payment cancelled {% endblock%}
+{% block style %} <link rel="stylesheet" href="{% static 'css/homepage.css' %}"> {% endblock %}
+
+
+{% block content %}
+    <div class="container mt-5">
+        <h1 class="text-danger">Payment Failed</h1>
+        <p>There was a problem processing your payment.</p>
+    </div>
+{% endblock %}

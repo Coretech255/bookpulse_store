@@ -1,0 +1,71 @@
+{% block content %}
+<div class="container-fluid sticky-top header-nav" id="headerNav">
+  <header class="blog-header py-3">
+    <div class="row flex-nowrap justify-content-between align-items-center">
+      <div class="col-4 pt-1">
+        <a class="text-muted blog-header-logo" href="{% url 'shop:index' %}">
+          <h3>Bookpulse</h3>
+        </a>
+      </div>
+      <div class="col-4 text-center d-none d-md-block">
+        <form method="GET" action="{% url 'shop:product-search' %}">
+          <div class="form-inline search-form">
+            <div class="input-group">
+              <button type="submit" class="input-group-prepend btn btn-sm">
+                <span class="input-group-text search-icon">
+                  <i class="fas fa-search"></i>
+                </span>
+              </button>
+              <input type="text" class="form-control custom-input" name="q" id="" value="{{ request.GET.q }}"
+                placeholder="Search for products...">
+        </form>
+      </div>
+    </div>
+</div>
+<div class="col-4 d-flex justify-content-end align-items-center">
+  <div class="custom-dropdown btn btn-sm ">
+    {% if user.is_authenticated %}
+    <button class="custom-dropdown-button py-1 px-2 d-lg-inline d-md-inline d-sm-inline d-xs-inline">{{user.email}} <i
+        class="fas fa-caret-down"></i></button>
+    <div class="custom-dropdown-content">
+      <a href="{% url 'user:profile' %}">Account</a>
+      <a href="#">Wishlist <span> - 71</span></a>
+      <a href="#">Help & Support</a>
+      <a href="{% url 'user:logout' %}">Logout</a>
+    </div>
+    {% else %}
+    <button class="custom-dropdown-button py-1 px-2 d-lg-inline d-md-inline d-sm-inline d-xs-inline">Create Account <i
+        class="fas fa-caret-down"></i></button>
+    <div class="custom-dropdown-content">
+      <a href="{% url 'user:register' %}">Sign Up</a>
+      <a href="#">Wishlist <span> - 20</span></a>
+      <a href="#">Help & Support</a>
+      <a href="{% url 'user:login' %}">Sign In</a>
+    </div>
+    {% endif %}
+  </div>
+  <a href="{% url 'cart:cart_detail' %}" class="cart-icon">
+    <i class="fas fa-shopping-cart"></i>
+    <span class="item-count">{{ request.session.cart|length }}</span>
+  </a>
+
+</div>
+</div>
+</header>
+
+
+<div class="nav-scroller py-1 mb-2">
+  <nav class="nav d-flex justify-content-between">
+    {% if user.is_authenticated %}
+      <a class="p-2 nav-item" href="{% url 'shop:recommendations' user_id=request.user.id %}">Recommended</a>
+    {% endif %}
+
+    {% for category in categories %}
+      <a href="{% url 'shop:books_by_category' category.id %}" class="p-2 nav-item">{{ category.name }}</a>
+      {% empty %}
+      <h3>No categories available.</h3>
+    {% endfor %}
+  </nav>
+</div>
+</div>
+{% endblock %}

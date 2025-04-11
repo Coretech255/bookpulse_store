@@ -1,0 +1,76 @@
+{% extends 'root/_base.html' %}
+{% load static %}
+{% block title %} Shopping cart {% endblock%}
+{% block style %} <link rel="stylesheet" href="{% static 'css/homepage.css' %}"> {% endblock %}
+
+    {% block content %}
+    <div class="container mt-5">
+        <h1 class="h4">Your shopping cart</h1>
+        <table class="table table-hover">
+            <thead>
+              <tr>
+                <th scope="col">Image</th>
+                <th scope="col">Book</th>
+                <th scope="col">QTY</th>
+                <th scope="col">Unit Price</th>
+                <th scope="col">Price</th>
+                <th scope="col">Remove</th>
+              </tr>
+            </thead>
+            <tbody class="table-group-divider">
+                {% for item in cart %}
+                {% with product=item.product %}
+              <tr>
+                <!--th scope="row">1</th-->
+                <td>
+                    <a href="{{ product.cover_photo_url }}" class="thumbnail">
+                        <img src="{% if product.cover_photo_url %}{{ product.cover_photo_url }}
+                        {% else %}{% static 'img/no_image.png' %}{% endif %}" style="
+                        width: 50px; /* Set the desired width */
+                        height: 50px; /* Set the desired height */
+                        object-fit: cover;">
+                    </a>
+                </td>
+                
+
+                <td>{{ product.title|truncatechars:20 }}</td>
+                <td>
+                    <form action="{% url 'cart:cart_add' product.id %}" method="post">
+                        {{ item.update_quantity_form.quantity}}
+                        {{ item.update_quantity_form.override}}
+                        <input type="submit" value="Update">
+                        {% csrf_token %}
+                    </form>
+                </td>
+
+                
+                <td class="num">(USD)$ {{ item.price }}</td>
+                <td class="num">(USD)$ {{ item.total_price }}</td>
+                
+                <td>
+                    <form action="{% url 'cart:cart_remove' product.id %}"
+                    method="post">
+                        <input type="submit" value="Remove">
+                        {% csrf_token %}
+                    </form>
+                </td>
+              </tr>
+
+              
+              {% endwith %}
+              {% endfor %}
+
+              <tr class="total">
+                  <td>Total</td>
+                  <td colspan="4"></td>
+                  <td class="num">(USD)$ {{ cart.get_total_price }}</td>
+              </tr>
+            </tbody>
+         </table>
+
+        <p class="text-right">
+            <a href="{% url 'shop:index' %}" class="buttonlight btn-">Continue shopping</a>
+            <a href="{% url 'orders:order_create' %}" class="btn btn-primary">Checkout</a>
+        </p>
+    </div>
+{% endblock %}
